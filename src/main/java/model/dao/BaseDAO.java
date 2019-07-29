@@ -1,11 +1,11 @@
 package model.dao;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Interface que contém os métodos que todos os DAOs devem implementar.
- * T é o tipo da classe que implementará o DAO.
- * Ex.: para a entidade Pessoa, deve ser criado uma classe PessoaDAO que implementa BaseDAO<Pessoa>.
+ * Interface que contém os métodos que todos os DAOs devem implementar. T é o
+ * tipo da classe que implementará o DAO. Ex.: para a entidade Pessoa, deve ser
+ * criado uma classe PessoaDAO que implementa BaseDAO<Pessoa>.
  * 
  * @author Vilmar César Pereira Júnior
  * @param <T> o tipo da classe de entidade (ou VO) que o DAO implementará
@@ -15,7 +15,8 @@ public interface BaseDAO<T> {
 	/**
 	 * Insere um novo registro tabela de entidade T
 	 * 
-	 * @param novaEntidade o objeto que contém o novo registro que será inserido na tabela.
+	 * @param novaEntidade o objeto que contém o novo registro que será inserido na
+	 *                     tabela.
 	 * 
 	 * @return a novaEntidade salva, agora contendo um id.
 	 */
@@ -30,7 +31,8 @@ public interface BaseDAO<T> {
 	public boolean excluir(int id);
 
 	/**
-	 * Altera um determinado registro na tabela T, dado o objeto escolhido para ser alterado.
+	 * Altera um determinado registro na tabela T, dado o objeto escolhido para ser
+	 * alterado.
 	 * 
 	 * @param entidade o objeto que terá o registro atualizado na tabela T.
 	 * @return true caso atualizou, false caso contrário.
@@ -50,5 +52,5 @@ public interface BaseDAO<T> {
 	 * 
 	 * @return uma lista de objetos do tipo T.
 	 */
-	public List<T> consultarTodos();
+	public ArrayList<T> consultarTodos();
 }
