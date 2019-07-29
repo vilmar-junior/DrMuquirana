@@ -77,6 +77,7 @@ public class ReceitaDAO implements BaseDAO<ReceitaVO> {
 			Banco.closeStatement(stmt);
 			Banco.closeConnection(conn);
 		}
+
 		return registrosAlterados > 0;
 	}
 
