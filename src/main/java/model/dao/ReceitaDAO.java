@@ -13,7 +13,10 @@ import model.vo.ReceitaVO;
 /**
  * Classe que contém as chamadas SQL para a entidade/tabela Receita.
  * 
- * @author Adriano de Melo Vilmar César Pereira Júnior
+ * @author Adriano de Melo
+ * 
+ *         Vilmar César Pereira Júnior
+ *
  *
  */
 public class ReceitaDAO implements BaseDAO<ReceitaVO> {
