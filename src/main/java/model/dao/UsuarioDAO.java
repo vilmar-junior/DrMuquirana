@@ -1,6 +1,7 @@
 package model.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,39 +15,24 @@ import model.vo.UsuarioVO;
  * @author Adriano de Melo
  *
  */
-public class UsuarioDAO {
+public class UsuarioDAO implements BaseDAO<UsuarioVO> {
 
-	public boolean existeRegistroPorCpf(String cpf) {
+	public UsuarioVO salvar(UsuarioVO usuarioVO) {
 		Connection conn = Banco.getConnection();
-		Statement stmt = Banco.getStatement(conn);
-		ResultSet resultado = null;
-		String query = "SELECT cpf FROM usuario WHERE cpf = '" + cpf + "'";
+		String sql = "INSERT INTO USUARIO (nome, cpf, telefone, login, senha) VALUES (?,?,?,?,?)";
+		PreparedStatement stmt = Banco.getPreparedStatement(conn, sql, Statement.RETURN_GENERATED_KEYS);
+
 		try {
-			resultado = stmt.executeQuery(query);
-			if (resultado.next()) {
-				return true;
+			stmt.setString(1, usuarioVO.getNome());
+			stmt.setString(2, usuarioVO.getCpf());
+			stmt.setString(3, usuarioVO.getTelefone());
+			stmt.setString(4, usuarioVO.getLogin());
+			stmt.setString(5, usuarioVO.getSenha());
+			stmt.execute();
+			ResultSet generatedKeys = stmt.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				usuarioVO.setIdUsuario(generatedKeys.getInt(1));
 			}
-		} catch (SQLException e) {
-			System.out.println("Erro ao executar a Query que verifica existência de Usuário por CPF.");
-			System.out.println("Erro: " + e.getMessage());
-			return false;
-		} finally {
-			Banco.closeResultSet(resultado);
-			Banco.closeStatement(stmt);
-			Banco.closeConnection(conn);
-		}
-		return false;
-	}
-
-	public int cadastrarUsuarioDAO(UsuarioVO usuarioVO) {
-		Connection conn = Banco.getConnection();
-		Statement stmt = Banco.getStatement(conn);
-		int resultado = 0;
-		String query = "INSERT INTO usuario (nome, cpf, telefone, login, senha) VALUES ('" + usuarioVO.getNome()
-				+ "', '" + usuarioVO.getCpf() + "', '" + usuarioVO.getTelefone() + "', '" + usuarioVO.getLogin()
-				+ "', '" + usuarioVO.getSenha() + "')";
-		try {
-			resultado = stmt.executeUpdate(query);
 		} catch (SQLException e) {
 			System.out.println("Erro ao executar a Query de Cadastro do Usuário.");
 			System.out.println("Erro: " + e.getMessage());
@@ -54,36 +40,16 @@ public class UsuarioDAO {
 			Banco.closeStatement(stmt);
 			Banco.closeConnection(conn);
 		}
-		return resultado;
+
+		return usuarioVO;
 	}
 
-	public boolean existeRegistroPorIdUsuario(int idUsuario) {
-		Connection conn = Banco.getConnection();
-		Statement stmt = Banco.getStatement(conn);
-		ResultSet resultado = null;
-		String query = "SELECT idusuario FROM usuario WHERE idusuario = " + idUsuario;
-		try {
-			resultado = stmt.executeQuery(query);
-			if (resultado.next()) {
-				return true;
-			}
-		} catch (SQLException e) {
-			System.out.println("Erro ao executar a Query que verifica existência de Registro por Id.");
-			System.out.println("Erro: " + e.getMessage());
-			return false;
-		} finally {
-			Banco.closeResultSet(resultado);
-			Banco.closeStatement(stmt);
-			Banco.closeConnection(conn);
-		}
-		return false;
-	}
-
-	public int excluirUsuarioDAO(UsuarioVO usuarioVO) {
+	public boolean excluir(int id) {
 		Connection conn = Banco.getConnection();
 		Statement stmt = Banco.getStatement(conn);
 		int resultado = 0;
-		String query = "DELETE FROM usuario WHERE idusuario = " + usuarioVO.getIdUsuario();
+
+		String query = "DELETE FROM usuario WHERE idusuario = " + id;
 		try {
 			resultado = stmt.executeUpdate(query);
 		} catch (SQLException e) {
@@ -93,10 +59,10 @@ public class UsuarioDAO {
 			Banco.closeStatement(stmt);
 			Banco.closeConnection(conn);
 		}
-		return resultado;
+		return (resultado > 0);
 	}
 
-	public int atualizarUsuarioDAO(UsuarioVO usuarioVO) {
+	public boolean alterar(UsuarioVO usuarioVO) {
 		Connection conn = Banco.getConnection();
 		Statement stmt = Banco.getStatement(conn);
 		int resultado = 0;
@@ -112,10 +78,39 @@ public class UsuarioDAO {
 			Banco.closeStatement(stmt);
 			Banco.closeConnection(conn);
 		}
-		return resultado;
+		return (resultado > 0);
 	}
 
-	public ArrayList<UsuarioVO> consultarTodosUsuariosDAO() {
+	public UsuarioVO consultarPorId(int id) {
+		Connection conn = Banco.getConnection();
+		Statement stmt = Banco.getStatement(conn);
+		ResultSet resultado = null;
+		UsuarioVO usuario = new UsuarioVO();
+
+		String query = "SELECT idusuario, nome, cpf, telefone, login, senha FROM usuario WHERE idusuario = " + id;
+
+		try {
+			resultado = stmt.executeQuery(query);
+			while (resultado.next()) {
+				usuario.setIdUsuario(Integer.parseInt(resultado.getString(1)));
+				usuario.setNome(resultado.getString(2));
+				usuario.setCpf(resultado.getString(3));
+				usuario.setTelefone(resultado.getString(4));
+				usuario.setLogin(resultado.getString(5));
+				usuario.setSenha(resultado.getString(6));
+			}
+		} catch (SQLException e) {
+			System.out.println("Erro ao executar a Query de Consulta de Usuário.");
+			System.out.println("Erro: " + e.getMessage());
+		} finally {
+			Banco.closeResultSet(resultado);
+			Banco.closeStatement(stmt);
+			Banco.closeConnection(conn);
+		}
+		return usuario;
+	}
+
+	public ArrayList<UsuarioVO> consultarTodos() {
 		Connection conn = Banco.getConnection();
 		Statement stmt = Banco.getStatement(conn);
 		ResultSet resultado = null;
@@ -144,34 +139,47 @@ public class UsuarioDAO {
 		return usuariosVO;
 	}
 
-	public UsuarioVO consultarUsuarioDAO(UsuarioVO usuarioVO) {
+	public boolean existeRegistroPorCpf(String cpf) {
 		Connection conn = Banco.getConnection();
 		Statement stmt = Banco.getStatement(conn);
 		ResultSet resultado = null;
-		UsuarioVO usuario = new UsuarioVO();
-
-		String query = "SELECT idusuario, nome, cpf, telefone, login, senha FROM usuario WHERE idusuario = "
-				+ usuarioVO.getIdUsuario();
-
+		String query = "SELECT cpf FROM usuario WHERE cpf = '" + cpf + "'";
 		try {
 			resultado = stmt.executeQuery(query);
-			while (resultado.next()) {
-				usuario.setIdUsuario(Integer.parseInt(resultado.getString(1)));
-				usuario.setNome(resultado.getString(2));
-				usuario.setCpf(resultado.getString(3));
-				usuario.setTelefone(resultado.getString(4));
-				usuario.setLogin(resultado.getString(5));
-				usuario.setSenha(resultado.getString(6));
+			if (resultado.next()) {
+				return true;
 			}
 		} catch (SQLException e) {
-			System.out.println("Erro ao executar a Query de Consulta de Usuário.");
+			System.out.println("Erro ao executar a Query que verifica existência de Usuário por CPF.");
 			System.out.println("Erro: " + e.getMessage());
+			return false;
 		} finally {
 			Banco.closeResultSet(resultado);
 			Banco.closeStatement(stmt);
 			Banco.closeConnection(conn);
 		}
-		return usuario;
+		return false;
 	}
 
+	public boolean existeRegistroPorIdUsuario(int idUsuario) {
+		Connection conn = Banco.getConnection();
+		Statement stmt = Banco.getStatement(conn);
+		ResultSet resultado = null;
+		String query = "SELECT idusuario FROM usuario WHERE idusuario = " + idUsuario;
+		try {
+			resultado = stmt.executeQuery(query);
+			if (resultado.next()) {
+				return true;
+			}
+		} catch (SQLException e) {
+			System.out.println("Erro ao executar a Query que verifica existência de Registro por Id.");
+			System.out.println("Erro: " + e.getMessage());
+			return false;
+		} finally {
+			Banco.closeResultSet(resultado);
+			Banco.closeStatement(stmt);
+			Banco.closeConnection(conn);
+		}
+		return false;
+	}
 }
