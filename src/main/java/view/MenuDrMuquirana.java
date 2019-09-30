@@ -9,6 +9,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import view.despesa.PainelDetalheDespesa;
 import view.despesa.PainelListagemDespesas;
 
 import java.awt.event.ActionListener;
@@ -27,6 +28,7 @@ public class MenuDrMuquirana {
 	private JPanel painelDireito;
 	
 	private PainelListagemDespesas painelDespesas = null;
+	private PainelDetalheDespesa painelCadastroDespesa = null;
 
 	/**
 	 * Launch the application.
@@ -61,7 +63,7 @@ public class MenuDrMuquirana {
 		frmDrMuquirana.setIconImage(Toolkit.getDefaultToolkit().getImage(MenuDrMuquirana.class.getResource("/icones/scrooge-McDuck-icon.png")));
 		frmDrMuquirana.setBounds(100, 100, 450, 300);
 		frmDrMuquirana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Dimension dimensoesTela = Toolkit.getDefaultToolkit().getScreenSize();
+		
 		
 		JMenuBar menubar = new JMenuBar();
 		frmDrMuquirana.setJMenuBar(menubar);
@@ -80,17 +82,33 @@ public class MenuDrMuquirana {
 		
 		JMenuItem mntmListarDespesas = new JMenuItem("Listar");
 		mntmListarDespesas.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent evt) {
 				if(painelDespesas == null) {
 					painelDespesas = new PainelListagemDespesas();
 					painelDireito.add(painelDespesas);
 					frmDrMuquirana.revalidate();
+					
+					//Adiciona listener (ouvinte) para o clique em nova despesa, que abrirá uma outra tela
+					painelDespesas.getBtnNovaDespesa().addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent evt) {
+							painelCadastroDespesa = new PainelDetalheDespesa(null);
+							painelEsquerdo.add(painelCadastroDespesa);
+							frmDrMuquirana.revalidate();
+						}
+					});
 				}
 			}
 		});
 		mnDespesas.add(mntmListarDespesas);
 		
 		JMenuItem mntmNovaDespesa = new JMenuItem("Nova");
+		mntmNovaDespesa.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				painelCadastroDespesa = new PainelDetalheDespesa(null);
+				painelEsquerdo.add(painelCadastroDespesa);
+				frmDrMuquirana.revalidate();
+			}
+		});
 		mnDespesas.add(mntmNovaDespesa);
 		
 		JMenu mnUsuarios = new JMenu("Usuários");
@@ -106,6 +124,7 @@ public class MenuDrMuquirana {
 		menubar.add(mnSobre);
 		frmDrMuquirana.getContentPane().setLayout(null);
 		
+		Dimension dimensoesTela = Toolkit.getDefaultToolkit().getScreenSize();
 		int larguraDosPaineis = (int) ((dimensoesTela.getWidth() - 20) / 2);
 		int alturaDaTela = (int) (dimensoesTela.getHeight() - 10);
 		
@@ -113,9 +132,6 @@ public class MenuDrMuquirana {
 		painelEsquerdo.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		painelEsquerdo.setBounds(10, 10, larguraDosPaineis, alturaDaTela);
 		frmDrMuquirana.getContentPane().add(painelEsquerdo);
-		
-		JButton btnNuncaSaiDa = new JButton("Nunca sai da tela");
-		painelEsquerdo.add(btnNuncaSaiDa);
 		
 		painelDireito = new JPanel();
 		painelDireito.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
