@@ -3,7 +3,9 @@ package model.bo;
 import java.util.ArrayList;
 
 import model.dao.DespesaDAO;
+import model.seletor.DespesaSeletor;
 import model.vo.DespesaVO;
+import model.vo.UsuarioVO;
 
 /**
  * Classe responsável pelas Regras de Negócio da despesa.
@@ -15,8 +17,8 @@ public class DespesaBO {
 
 	public void cadastrarDespesaBO(DespesaVO despesaVO) {
 		DespesaDAO despesaDAO = new DespesaDAO();
-		int resultado = despesaDAO.cadastrarDespesaDAO(despesaVO);
-		if (resultado == 1) {
+		despesaVO = despesaDAO.salvar(despesaVO);
+		if (despesaVO.getId() > 0) {
 			System.out.println("\nDespesa cadastrada com Sucesso.");
 		} else {
 			System.out.println("\nNão foi possível cadastrar a Despesa.");
@@ -26,8 +28,7 @@ public class DespesaBO {
 	public void excluirDespesaBO(DespesaVO despesaVO) {
 		DespesaDAO despesaDAO = new DespesaDAO();
 		if (despesaDAO.existeRegistroPorIdDespesa(despesaVO.getId())) {
-			int resultado = despesaDAO.excluirDespesaDAO(despesaVO);
-			if (resultado == 1) {
+			if (despesaDAO.excluir(despesaVO.getId())) {
 				System.out.println("\nDespesa excluída com Sucesso.");
 			} else {
 				System.out.println("\nNão foi possível excluir a Despesa.");
@@ -40,8 +41,7 @@ public class DespesaBO {
 	public void atualizarDespesaBO(DespesaVO despesaVO) {
 		DespesaDAO despesaDAO = new DespesaDAO();
 		if (despesaDAO.existeRegistroPorIdDespesa(despesaVO.getId())) {
-			int resultado = despesaDAO.atualizarDespesaDAO(despesaVO);
-			if (resultado == 1) {
+			if (despesaDAO.alterar(despesaVO)) {
 				System.out.println("\nDespesa atualizada com Sucesso.");
 			} else {
 				System.out.println("\nNão foi possível atualizar a Despesa.");
@@ -53,7 +53,7 @@ public class DespesaBO {
 
 	public ArrayList<DespesaVO> consultarTodasDespesasBO(DespesaVO despesaVO) {
 		DespesaDAO despesaDAO = new DespesaDAO();
-		ArrayList<DespesaVO> despesasVO = despesaDAO.consultarTodasDespesasDAO(despesaVO);
+		ArrayList<DespesaVO> despesasVO = despesaDAO.consultarDespesasDoUsuario(despesaVO.getIdUsuario());
 		if (despesasVO.isEmpty()) {
 			System.out.println("\nLista de Despesas está vazia.");
 		}
@@ -62,11 +62,46 @@ public class DespesaBO {
 
 	public DespesaVO consultarDespesaBO(DespesaVO despesaVO) {
 		DespesaDAO despesaDAO = new DespesaDAO();
-		DespesaVO despesa = despesaDAO.consultarDespesaDAO(despesaVO);
+		DespesaVO despesa = despesaDAO.consultarPorId(despesaVO.getId());
 		if (despesa == null) {
 			System.out.println("\nDespesa não Localizada.");
 		}
 		return despesa;
 	}
 
+	public ArrayList<DespesaVO> consultarDespesas(UsuarioVO usuarioSelecionado, String categoriaSelecionada) {
+		DespesaDAO despesaDAO = new DespesaDAO();
+		ArrayList<DespesaVO> despesas = new ArrayList<DespesaVO>();
+		
+		boolean temUsuario = (usuarioSelecionado != null);
+		boolean temCategoria = (categoriaSelecionada != null && !categoriaSelecionada.isEmpty());
+		
+		if(!temUsuario && !temCategoria) {
+			despesas = despesaDAO.consultarTodos();
+		}
+		
+		if(temUsuario && !temCategoria) {
+			despesas = despesaDAO.consultarDespesasDoUsuario(usuarioSelecionado.getIdUsuario());
+		}
+		
+		if(!temUsuario && temCategoria) {
+			despesas = despesaDAO.consultarDespesasPorCategoria(categoriaSelecionada);
+		}
+		
+		if(temUsuario && temCategoria) {
+			despesas = despesaDAO.consultarDespesasPorUsuarioECategoria(usuarioSelecionado.getIdUsuario(), categoriaSelecionada);
+		}
+		
+		return despesas;
+	}
+
+	public ArrayList<String> consultarCategorias() {
+		DespesaDAO despesaDAO = new DespesaDAO();
+		return despesaDAO.consultarCategorias();
+	}
+
+	public ArrayList<DespesaVO> consultarDespesas(DespesaSeletor seletor) {
+		DespesaDAO despesaDAO = new DespesaDAO();
+		return despesaDAO.consultarDespesas(seletor);
+	}
 }
