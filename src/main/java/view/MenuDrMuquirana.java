@@ -2,12 +2,15 @@ package view;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Image;
 
 import javax.swing.JFrame;
 import java.awt.Toolkit;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import view.despesa.PainelDetalheDespesa;
 import view.despesa.PainelListagemDespesas;
@@ -20,6 +23,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MenuDrMuquirana {
 
@@ -72,6 +77,11 @@ public class MenuDrMuquirana {
 		menubar.add(mnReceitas);
 		
 		JMenuItem mntmListar = new JMenuItem("Listar");
+		mntmListar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JOptionPane.showMessageDialog(null, "Olá");
+			}
+		});
 		mnReceitas.add(mntmListar);
 		
 		JMenuItem mntmNova = new JMenuItem("Nova");
@@ -117,8 +127,8 @@ public class MenuDrMuquirana {
 		JMenuItem mntmListarUsuarios = new JMenuItem("Listar");
 		mnUsuarios.add(mntmListarUsuarios);
 		
-		JMenu mnRelatrios = new JMenu("Relatórios");
-		menubar.add(mnRelatrios);
+		JMenu mnRelatorios = new JMenu("Relatórios");
+		menubar.add(mnRelatorios);
 		
 		JMenu mnSobre = new JMenu("Sobre");
 		menubar.add(mnSobre);
@@ -128,7 +138,16 @@ public class MenuDrMuquirana {
 		int larguraDosPaineis = (int) ((dimensoesTela.getWidth() - 20) / 2);
 		int alturaDaTela = (int) (dimensoesTela.getHeight() - 10);
 		
-		painelEsquerdo = new JPanel();
+		final Image planoDeFundo = Toolkit.getDefaultToolkit().getImage(MenuDrMuquirana.class.getResource("/icones/tio_patinhas.png"));
+		painelEsquerdo = (new JPanel() {
+	         @Override
+	         public void paintComponent(Graphics g) {
+	            super.paintComponent(g);
+	            g.drawImage(planoDeFundo, 0, 0, null);
+	         }
+	      });
+		painelEsquerdo.setVisible(true);
+		
 		painelEsquerdo.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		painelEsquerdo.setBounds(10, 10, larguraDosPaineis, alturaDaTela);
 		frmDrMuquirana.getContentPane().add(painelEsquerdo);
@@ -139,3 +158,4 @@ public class MenuDrMuquirana {
 		frmDrMuquirana.getContentPane().add(painelDireito);
 	}
 }
+
