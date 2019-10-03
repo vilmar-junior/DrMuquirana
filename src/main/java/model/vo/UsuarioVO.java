@@ -82,4 +82,9 @@ public class UsuarioVO {
 				this.getTelefone());
 	}
 
+	@Override
+	public String toString() {
+		return  nome;
+	}
+
 }

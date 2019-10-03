@@ -100,7 +100,7 @@ public class PainelListagemDespesas extends JPanel {
 		btnVoltarPagina = new JButton("<<");
 		btnVoltarPagina.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(paginaAtual > 0) {
+				if(paginaAtual > 1) {
 					paginaAtual--;
 					lblPaginaAtual.setText(paginaAtual + "");
 					consultarDespesas();
@@ -231,8 +231,10 @@ public class PainelListagemDespesas extends JPanel {
 
 		ControladoraDespesa controller = new ControladoraDespesa();
 		ArrayList<DespesaVO> despesas = controller.consultarDespesas(seletor);
+	
 		totalPaginas = controller.consultarTotalPaginas(seletor);
 		lblTotalPaginas.setText(totalPaginas + "");
+		
 		atualizarTabelaDespesas(despesas);
 		verificarBotoesPaginas();
 	}

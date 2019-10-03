@@ -101,9 +101,7 @@ public class MenuDrMuquirana {
 					//Adiciona listener (ouvinte) para o clique em nova despesa, que abrirá uma outra tela
 					painelDespesas.getBtnNovaDespesa().addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent evt) {
-							painelCadastroDespesa = new PainelDetalheDespesa(null);
-							painelEsquerdo.add(painelCadastroDespesa);
-							frmDrMuquirana.revalidate();
+							mostrarPainelCadastroDespesa();
 						}
 					});
 				}
@@ -114,9 +112,7 @@ public class MenuDrMuquirana {
 		JMenuItem mntmNovaDespesa = new JMenuItem("Nova");
 		mntmNovaDespesa.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				painelCadastroDespesa = new PainelDetalheDespesa(null);
-				painelEsquerdo.add(painelCadastroDespesa);
-				frmDrMuquirana.revalidate();
+				mostrarPainelCadastroDespesa();
 			}
 		});
 		mnDespesas.add(mntmNovaDespesa);
@@ -156,6 +152,16 @@ public class MenuDrMuquirana {
 		painelDireito.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		painelDireito.setBounds(larguraDosPaineis + 10, 10, larguraDosPaineis, alturaDaTela);
 		frmDrMuquirana.getContentPane().add(painelDireito);
+	}
+	
+	private void mostrarPainelCadastroDespesa() {
+		if(painelCadastroDespesa == null) {
+			painelCadastroDespesa = new PainelDetalheDespesa();
+			painelEsquerdo.add(painelCadastroDespesa);
+		}else {
+			painelEsquerdo.setVisible(true);
+		}
+		frmDrMuquirana.revalidate();
 	}
 }
 
